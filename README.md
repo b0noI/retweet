@@ -1,0 +1,1 @@
+ChatGPT credentials secret id: ```projects/16255416068/secrets/credentials-chatgpt```
