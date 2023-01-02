@@ -1,5 +1,6 @@
 # local config
-config.json
+**/config.json
+**/openai.secret
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
