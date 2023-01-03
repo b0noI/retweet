@@ -5,6 +5,7 @@ import falcon
 
 
 class RephraseResource:
+    
     def on_post(self, req, resp):
         """Handles GET requests"""
         req_obj = req.get_media()
