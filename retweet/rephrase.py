@@ -41,7 +41,7 @@ def rephrase(text):
         max_tokens=280,
         temperature=0.9
     )
-    return response["choices"][0]["text"]
+    return response["choices"][0]["text"].strip()
 
 
 if __name__ == "__main__":
