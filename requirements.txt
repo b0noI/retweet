@@ -1,0 +1,7 @@
+falcon==3.1.1
+google-cloud-secret-manager==2.13.0
+grpc-google-iam-v1==0.12.4
+openai==0.25.0
+protobuf==4.21.12
+requests==2.28.1
+urllib3==1.26.13
