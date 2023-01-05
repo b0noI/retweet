@@ -26,6 +26,41 @@ TRUMP_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the
 $text"""
 TRUMP_TEMPLATE = Template(TRUMP_TEMPLATE_STRING)
 
+BOND_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how James Bond could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+BOND_TEMPLATE = Template(BOND_TEMPLATE_STRING)
+
+HOLMES_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how Sherlock Holmes could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+HOLMES_TEMPLATE = Template(HOLMES_TEMPLATE_STRING)
+
+LECTER_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how Hannibal Lecter could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+LECTER_TEMPLATE = Template(LECTER_TEMPLATE_STRING)
+
+YODA_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how Jedi Master Yoda could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+YODA_TEMPLATE = Template(YODA_TEMPLATE_STRING)
+
+JOKER_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how The Joker could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+JOKER_TEMPLATE = Template(JOKER_TEMPLATE_STRING)
+
+GOLLUM_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how Gollum could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+GOLLUM_TEMPLATE = Template(GOLLUM_TEMPLATE_STRING)
+
+STALIN_TEMPLATE_STRING="""Keeping the meaning re-write the following tweet in the way how Joseph Stalin could have twitted similar thought. Result still should be a twitter sized
+----
+$text"""
+STALIN_TEMPLATE = Template(STALIN_TEMPLATE_STRING)
+
 JOKE_TEMPLATE_STRING="""Write message from the following tweet in a form of a joke (it is ok to be explicit and unpolite here). Result still should be a twitter sized
 ----
 $text"""
