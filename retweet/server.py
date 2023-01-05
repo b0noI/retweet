@@ -5,7 +5,7 @@ import falcon
 
 
 class RephraseResource:
-    
+
     def on_post(self, req, resp):
         """Handles GET requests"""
         req_obj = req.get_media()
@@ -18,7 +18,7 @@ class RephraseResource:
         resp.status = falcon.HTTP_200  # This is the default status
         resp.media = {"text": updated_text}
 
-app = falcon.App()
+app = falcon.App(cors_enable=True)
 
 # Resources are represented by long-lived class instances
 rephrase_resrouce = RephraseResource()
