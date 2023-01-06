@@ -1,14 +1,24 @@
 from wsgiref.simple_server import make_server
 
-from . import rephrase, templates
+from . import rephrase, templates, utils
 import firebase_admin
 from firebase_admin import firestore
 
 import falcon
+import requests
 
 firebase_admin.initialize_app()
 
 db = firestore.Client(project="social-investments-337201")
+
+def verify_recaptcha(token):
+    data = {
+        'secret': utils.get_recaptcha_secret(),
+        'response': token
+    }
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+    result = r.json()
+    return result['success']
 
 class RephraseResource:
 
@@ -19,6 +29,10 @@ class RephraseResource:
         template_name = templates.get_default_template_name()
         if "template_name" in req_obj:
             template_name = req_obj["template_name"]
+#        if "recaptcha_token" in req_obj:
+#            if not verify_recaptcha(req_obj["recaptcha_token"]):
+#                resp.status = falcon.HTTP_403
+#                return
         if not original_text:
             resp.status = falcon.HTTP_403
             return

@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <title>Retweet</title>
+  </head>
+  <body>
+    <label for="text-input">Tweet:</label>
+    <br>
+    <textarea id="text-input" rows="5" cols="34" maxlength="250" required></textarea>
+    <br><br>
+    <label for="template-select">Template:</label>
+    <select id="template-select">	  
+	  <option value="BOND">BOND</option>
+	  <option value="GOLLUM">GOLLUM</option>      
+      <option value="HOLMES">HOLMES</option>
+	  <option value="JOKE">JOKE</option>
+	  <option value="JOKER">JOKER</option>
+	  <option value="KANT">KANT</option>
+	  <option value="LECTER">LECTER</option>
+	  <option value="MUSK">MUSK</option>
+	  <option value="SHAKESPEARE">SHAKESPEARE</option>
+      <option value="STALIN">STALIN</option>     
+      <option value="TRUMP">TRUMP</option>     
+      <option value="YODA">YODA</option>      
+    </select>
+	<div id="recaptcha-container"></div>
+    <button id="send-request-button" disabled>Rephrase</button>
+    <div id="response-container"></div>
+	<script src="https://www.google.com/recaptcha/api.js?render=6LcCEdkjAAAAAGiq9C89dGK2VZ1RDgvtj4pCuXEk"></script>
+    <script>
+      const endpoint = 'http://127.0.0.1:8080/rephrase';
+      let recaptchaToken = null;
+      
+	  const sendRequest = () => {
+        const text = document.getElementById('text-input').value.trim();
+		if (!text || text.length < 25) {
+          document.getElementById('response-container').innerHTML = '<br>Please enter a text with at least 25 characters.';
+          return;
+        }
+        const templateName = document.getElementById('template-select').value;
+        const requestBody = {
+          text: text,
+          template_name: templateName,
+		  recaptcha_token: recaptchaToken
+        };
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', endpoint, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = () => {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            document.getElementById('response-container').innerHTML = response.text;
+          }
+        };
+        xhr.send(JSON.stringify(requestBody));
+      };
+		
+	  grecaptcha.ready(() => {
+	    grecaptcha.execute('6LcCEdkjAAAAAGiq9C89dGK2VZ1RDgvtj4pCuXEk', {action: 'send_request'}).then((token) => {
+		  document.getElementById('send-request-button').disabled = false;
+		  recaptchaToken = token;
+	    });
+	  });
+	  
+      document.getElementById('send-request-button').addEventListener('click', sendRequest);
+    </script>
+  </body>
+</html>

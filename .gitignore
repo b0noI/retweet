@@ -1,6 +1,7 @@
 # local config
 **/config.json
 **/openai.secret
+**/recaptcha.secret
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
