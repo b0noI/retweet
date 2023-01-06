@@ -1,8 +1,14 @@
 from wsgiref.simple_server import make_server
+
 from . import rephrase, templates
+import firebase_admin
+from firebase_admin import firestore
 
 import falcon
 
+firebase_admin.initialize_app()
+
+db = firestore.Client(project="social-investments-337201")
 
 class RephraseResource:
 
@@ -18,6 +24,11 @@ class RephraseResource:
             return
 
         updated_text = rephrase.rephrase(original_text, template_name=template_name)
+        db.collection("retweet").add({
+            "timestamp": firestore.SERVER_TIMESTAMP,
+            "text": original_text,
+            "rephrased_text": updated_text
+        })
         resp.status = falcon.HTTP_200
         resp.media = {"text": updated_text}
 
