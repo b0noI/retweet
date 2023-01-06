@@ -1,16 +1,9 @@
 import os
 import openai
-import firebase_admin
-from firebase_admin import firestore
 
 from . import const 
 from . import utils
 from . import templates
-
-firebase_admin.initialize_app()
-
-db = firestore.client()
-
 
 
 def rephrase(text, template_name=templates.get_default_template_name()):
@@ -24,14 +17,7 @@ def rephrase(text, template_name=templates.get_default_template_name()):
         max_tokens=280,
         temperature=0.9
     )
-    
-    rephrased_text = response["choices"][0]["text"].strip()
-    doc_ref = db.collection("retweet").add({
-        'timestamp': firestore.SERVER_TIMESTAMP,
-        "text": text,
-        "rephrased_text": rephrased_text
-    })
-    return rephrased_text
+    return response["choices"][0]["text"].strip()
 
 if __name__ == "__main__":
     print(
