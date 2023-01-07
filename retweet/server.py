@@ -7,6 +7,8 @@ from firebase_admin import firestore
 import falcon
 import requests
 
+enable_recaptcha = False
+
 firebase_admin.initialize_app()
 
 db = firestore.Client(project="social-investments-337201")
@@ -29,10 +31,10 @@ class RephraseResource:
         template_name = templates.get_default_template_name()
         if "template_name" in req_obj:
             template_name = req_obj["template_name"]
-#        if "recaptcha_token" in req_obj:
-#            if not verify_recaptcha(req_obj["recaptcha_token"]):
-#                resp.status = falcon.HTTP_403
-#                return
+        if "recaptcha_token" in req_obj and enable_recaptcha:
+            if not verify_recaptcha(req_obj["recaptcha_token"]):
+                resp.status = falcon.HTTP_403
+                return
         if not original_text:
             resp.status = falcon.HTTP_403
             return
