@@ -42,7 +42,7 @@ class RephraseResource:
         updated_text = rephrase.rephrase(original_text, template_name=template_name)
         db.collection("retweet").add({
             "timestamp": firestore.SERVER_TIMESTAMP,
-            "template": template_name,
+            "template_name": template_name,
             "text": original_text,
             "rephrased_text": updated_text
         })
