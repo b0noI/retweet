@@ -59,17 +59,33 @@ class TemplatesResource:
         resp.media = templates.get_templates_names()
 
 
+
+class TemplateResource:
+
+    def on_get(self, req, resp, template_id):
+        """Handles GET requests"""
+
+        # Currnetly we are only going to return DEFAULT teamplate name
+        if template_id != "DEFAULT":
+            resp.status = falcon.HTTP_404
+            return
+        resp.status = falcon.HTTP_200
+        resp.media = templates.get_teamplate_raw_string(template_id)
+
+
 app = falcon.App(cors_enable=True)
 
 rephrase_resrouce = RephraseResource()
 templates_resrouce = TemplatesResource()
+template_resrouce = TemplateResource()
 
-app.add_route('/rephrase', rephrase_resrouce)
-app.add_route('/templates', templates_resrouce)
+app.add_route("/rephrase", rephrase_resrouce)
+app.add_route("/templates", templates_resrouce)
+app.add_route("/templates/{template_id}", template_resrouce)
 
-if __name__ == '__main__':
-    with make_server('', 8080, app) as httpd:
-        print('Serving on port 8080...')
+if __name__ == "__main__":
+    with make_server("", 8080, app) as httpd:
+        print("Serving on port 8080...")
 
         # Serve until process is killed
         httpd.serve_forever()
