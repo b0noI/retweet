@@ -1,6 +1,6 @@
 from wsgiref.simple_server import make_server
 
-from . import rephrase, templates, utils
+from . import rephrase, templates, utils, threader
 import firebase_admin
 from firebase_admin import firestore
 
@@ -21,6 +21,29 @@ def verify_recaptcha(token):
     r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
     result = r.json()
     return result['success']
+
+class ThreaderResource:
+
+    def on_post(self, req, resp):
+        """Handles POST requests"""
+        req_obj = req.get_media()
+        original_text = req_obj["text"]
+        if not original_text:
+            resp.status = falcon.HTTP_403
+            return
+        if "recaptcha_token" in req_obj and enable_recaptcha:
+            if not verify_recaptcha(req_obj["recaptcha_token"]):
+                resp.status = falcon.HTTP_403
+                return
+
+        updated_text = threader.rethread(original_text)
+        db.collection("threads").add({
+            "timestamp": firestore.SERVER_TIMESTAMP,
+            "text": original_text,
+            "thread": updated_text
+        })
+        resp.status = falcon.HTTP_200
+        resp.media = {"thread": updated_text}
 
 class RephraseResource:
 
@@ -75,13 +98,15 @@ class TemplateResource:
 
 app = falcon.App(cors_enable=True)
 
-rephrase_resrouce = RephraseResource()
-templates_resrouce = TemplatesResource()
-template_resrouce = TemplateResource()
+rephrase_resource = RephraseResource()
+templates_resource = TemplatesResource()
+template_resource= TemplateResource()
+threaded_resource = ThreaderResource()
 
-app.add_route("/rephrase", rephrase_resrouce)
-app.add_route("/templates", templates_resrouce)
-app.add_route("/templates/{template_id}", template_resrouce)
+app.add_route("/threadit", threaded_resource)
+app.add_route("/rephrase", rephrase_resource)
+app.add_route("/templates", templates_resource)
+app.add_route("/templates/{template_id}", template_resource)
 
 if __name__ == "__main__":
     with make_server("", 8080, app) as httpd:
