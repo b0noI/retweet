@@ -7,7 +7,7 @@ from firebase_admin import firestore
 import falcon
 import requests
 
-enable_recaptcha = True
+enable_recaptcha = False
 
 firebase_admin.initialize_app()
 
