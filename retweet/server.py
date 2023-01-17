@@ -88,7 +88,7 @@ class RephraseResource(AbstractPostResrourceUnderRecaptcha):
         resp.media = {"text": updated_text}
 
 
-class TemplatesResource:
+class TemplatesResource(object):
 
     def on_get(self, req, resp):
         """Handles GET requests"""
@@ -98,7 +98,7 @@ class TemplatesResource:
 
 
 
-class TemplateResource:
+class TemplateResource(object):
 
     def on_get(self, req, resp, template_id):
         """Handles GET requests"""
