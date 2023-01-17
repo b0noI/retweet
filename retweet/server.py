@@ -17,7 +17,7 @@ db = firestore.Client(project="social-investments-337201")
 class AbstractPostResrourceUnderRecaptcha(abc.ABC):
 
     def __init__(self):
-        self.enable_recaptcha = False
+        self.enable_recaptcha = True
 
     def verify_recaptcha(self, token):
         data = {
@@ -95,7 +95,6 @@ class TemplatesResource(object):
 
         resp.status = falcon.HTTP_200
         resp.media = templates.get_templates_names()
-
 
 
 class TemplateResource(object):
