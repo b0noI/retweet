@@ -4,37 +4,55 @@ from . import rephrase, templates, utils, threader
 import firebase_admin
 from firebase_admin import firestore
 
+import abc
 import falcon
 import requests
 
-enable_recaptcha = False
 
 firebase_admin.initialize_app()
 
 db = firestore.Client(project="social-investments-337201")
 
-def verify_recaptcha(token):
-    data = {
-        'secret': utils.get_recaptcha_secret(),
-        'response': token
-    }
-    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-    result = r.json()
-    return result['success']
 
-class ThreaderResource:
+class AbstractPostResrourceUnderRecaptcha(abc.ABC):
+
+    def __init__(self):
+        self.enable_recaptcha = False
+
+    def verify_recaptcha(self, token):
+        data = {
+            'secret': utils.get_recaptcha_secret(),
+            'response': token
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        return result['success']
 
     def on_post(self, req, resp):
+        req_obj = req.get_media()
+        if "recaptcha_token" in req_obj and self.enable_recaptcha:
+            if not self.verify_recaptcha(req_obj["recaptcha_token"]):
+                resp.status = falcon.HTTP_403
+                return
+        return self.on_post_protected(req, resp)
+
+    @abc.abstractmethod
+    def on_post_protected(self, req, resp):
+        pass
+
+
+class ThreaderResource(AbstractPostResrourceUnderRecaptcha):
+
+    def on_post_protected(self, req, resp):
         """Handles POST requests"""
         req_obj = req.get_media()
         original_text = req_obj["text"]
-        if not original_text:
-            resp.status = falcon.HTTP_403
+        if len(original_text) > 3000:
+            resp.status = falcon.HTTP_400
             return
-        if "recaptcha_token" in req_obj and enable_recaptcha:
-            if not verify_recaptcha(req_obj["recaptcha_token"]):
-                resp.status = falcon.HTTP_403
-                return
+        if not original_text:
+            resp.status = falcon.HTTP_400
+            return
 
         updated_text = threader.rethread(original_text)
         db.collection("threads").add({
@@ -45,19 +63,16 @@ class ThreaderResource:
         resp.status = falcon.HTTP_200
         resp.media = {"thread": updated_text}
 
-class RephraseResource:
 
-    def on_post(self, req, resp):
+class RephraseResource(AbstractPostResrourceUnderRecaptcha):
+
+    def on_post_protected(self, req, resp):
         """Handles POST requests"""
         req_obj = req.get_media()
         original_text = req_obj["text"]
         template_name = templates.get_default_template_name()
         if "template_name" in req_obj:
             template_name = req_obj["template_name"]
-        if "recaptcha_token" in req_obj and enable_recaptcha:
-            if not verify_recaptcha(req_obj["recaptcha_token"]):
-                resp.status = falcon.HTTP_403
-                return
         if not original_text:
             resp.status = falcon.HTTP_403
             return
@@ -107,6 +122,7 @@ app.add_route("/threadit", threaded_resource)
 app.add_route("/rephrase", rephrase_resource)
 app.add_route("/templates", templates_resource)
 app.add_route("/templates/{template_id}", template_resource)
+
 
 if __name__ == "__main__":
     with make_server("", 8080, app) as httpd:
