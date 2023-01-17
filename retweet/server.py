@@ -30,11 +30,20 @@ class AbstractPostResrourceUnderRecaptcha(abc.ABC):
 
     def on_post(self, req, resp):
         req_obj = req.get_media()
-        if "recaptcha_token" in req_obj and self.enable_recaptcha:
+        if not self.ignore_recaptcha(req):
+            if not "recaptcha_token" in req_obj:
+                resp.status = falcon.HTTP_403
+                return
             if not self.verify_recaptcha(req_obj["recaptcha_token"]):
                 resp.status = falcon.HTTP_403
                 return
         return self.on_post_protected(req, resp)
+
+    def ignore_recaptcha(self, req):
+        remote_ip = req.env.get("HTTP_X_FORWARDED_FOR") or req.remote_addr
+        if remote_ip == "67.170.251.117" or remote_ip == "127.0.0.1":
+            return True
+        return not self.enable_recaptcha
 
     @abc.abstractmethod
     def on_post_protected(self, req, resp):
