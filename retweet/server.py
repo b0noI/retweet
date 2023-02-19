@@ -17,7 +17,7 @@ db = firestore.Client(project="social-investments-337201")
 class AbstractPostResrourceUnderRecaptcha(abc.ABC):
 
     def __init__(self):
-        self.enable_recaptcha = True
+        self.enable_recaptcha = False
 
     def verify_recaptcha(self, token):
         data = {
