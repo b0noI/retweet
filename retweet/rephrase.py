@@ -14,7 +14,7 @@ def rephrase(text, template_name=templates.get_default_template_name()):
     response = openai.Completion.create(
         model="text-davinci-003",
         prompt=prompt,
-        max_tokens=280,
+        max_tokens=const.MAX_CHARACTERS_SIZE,
         temperature=0.9
     )
     return response["choices"][0]["text"].strip()
