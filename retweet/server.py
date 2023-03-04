@@ -5,6 +5,7 @@ import firebase_admin
 from firebase_admin import firestore
 
 import abc
+import datetime
 import falcon
 import requests
 
@@ -99,11 +100,23 @@ class RephraseResource(AbstractPostResrourceUnderRecaptcha):
 
 class TemplatesResource(object):
 
+    def __init__(self):
+        self._template_names = None
+        self._cache_last_updated = None
+
+    def _maybe_update_cache(self):
+        current_time = datetime.datetime.now()
+        if self._cache_last_updated and (current_time - self._cache_last_updated).days < 1:
+            return
+        
+        self._template_names = templates.get_templates_names()
+        self._cache_last_updated = current_time
+
     def on_get(self, req, resp):
         """Handles GET requests"""
-
+        self._maybe_update_cache()
         resp.status = falcon.HTTP_200
-        resp.media = templates.get_templates_names()
+        resp.media = self._template_names
 
 
 class TemplateResource(object):
