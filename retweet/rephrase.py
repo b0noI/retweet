@@ -11,13 +11,13 @@ def rephrase(text, template_name=templates.get_default_template_name()):
     prompt = template.substitute(text=text)
     openai.organization = const.GPT3_ORG_ID
     openai.api_key = utils.get_gpt3_secret()
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=const.MAX_CHARACTERS_SIZE,
-        temperature=0.9
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+          {"role": "system", "content": "You should improve my tweeet."},
+          {"role": "user", "content": prompt}]
     )
-    return response["choices"][0]["text"].strip()
+    return response.choices[0]["message"]["content"].strip()
 
 if __name__ == "__main__":
     print(
